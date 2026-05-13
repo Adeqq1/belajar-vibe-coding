@@ -24,6 +24,7 @@ const app = new Elysia({
         tags: [
           { name: 'Users', description: 'User management endpoints' },
           { name: 'Posts', description: 'Post management endpoints' },
+          { name: 'Auth', description: 'Authentication endpoints' },
         ],
       },
     })
@@ -46,7 +47,7 @@ async function startServer() {
   const port = process.env.PORT || 3000;
   const host = process.env.HOST || 'localhost';
 
-  app.listen(port, () => {
+  app.listen({ port, hostname: host }, () => {
     console.log(`🚀 Elysia is running at http://${host}:${port}`);
     console.log(`📝 API Documentation available at http://${host}:${port}/docs`);
   });
