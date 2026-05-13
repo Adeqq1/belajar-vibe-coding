@@ -1,8 +1,10 @@
 import { Elysia } from 'elysia';
 import { usersRoutes } from './users';
 import { postsRoutes } from './posts';
+import { authRoutes } from './auth';
 
-export const routes = new Elysia({ prefix: '/api' })
+export const routes = new Elysia()
+  .use(authRoutes)
   .use(usersRoutes)
   .use(postsRoutes)
   .get('/', ({ set }) => {
