@@ -1,10 +1,14 @@
-import { defineConfig } from "drizzle-kit";
+import type { Config } from 'drizzle-kit';
 
-export default defineConfig({
-  schema: "./src/db/schema.ts",
-  out: "./drizzle",
-  dialect: "mysql",
+export default {
+  schema: './src/db/schema.ts',
+  out: './src/migrations',
+  driver: 'mysql2',
   dbCredentials: {
-    url: process.env.DATABASE_URL!,
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '3306'),
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'elysia_drizzle',
   },
-});
+} satisfies Config;
