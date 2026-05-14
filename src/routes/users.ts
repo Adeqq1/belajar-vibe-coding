@@ -1,9 +1,13 @@
 import { Elysia, t } from 'elysia';
 import { UserModel } from '../models/user.model';
-import { authMiddleware } from '../middleware/auth';
+import { createAuthMiddleware } from '../middleware/auth';
 import { getCurrentUser } from '../services/user-service';
+import { db } from '../config/database';
+import { sessions, users } from '../db/schema';
+import { eq } from 'drizzle-orm';
 
-export const usersRoutes = new Elysia({ prefix: '/users' })
+// Public routes
+const publicRoutes = new Elysia({ prefix: '/users' })
   .get('/', async () => {
     try {
       const users = await UserModel.findAll();
@@ -154,12 +158,60 @@ export const usersRoutes = new Elysia({ prefix: '/users' })
       summary: 'Delete user by ID',
       description: 'Soft deletes a user by setting isActive to false',
     },
-  })
+  });
 
-  .use(authMiddleware)
-  .get('/current', async ({ user, set }) => {
+// Protected routes with inline auth
+const protectedRoutes = new Elysia({ prefix: '/users' })
+  .get('/current', async ({ headers, set }) => {
     try {
-      // User sudah tersedia dari authMiddleware
+      const authHeader = headers.authorization;
+
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        set.status = 401;
+        return {
+          error: 'Unauthorized',
+        };
+      }
+
+      const token = authHeader.substring(7);
+
+      if (!token) {
+        set.status = 401;
+        return {
+          error: 'Unauthorized',
+        };
+      }
+
+      const sessionResult = await db
+        .select()
+        .from(sessions)
+        .where(eq(sessions.token, token))
+        .execute();
+
+      if (!sessionResult || sessionResult.length === 0) {
+        set.status = 401;
+        return {
+          error: 'Unauthorized',
+        };
+      }
+
+      const session = sessionResult[0];
+
+      const userResult = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, session.userId))
+        .execute();
+
+      if (!userResult || userResult.length === 0) {
+        set.status = 401;
+        return {
+          error: 'Unauthorized',
+        };
+      }
+
+      const user = userResult[0];
+
       return {
         data: {
           id: user.id,
@@ -181,3 +233,8 @@ export const usersRoutes = new Elysia({ prefix: '/users' })
       description: 'Get currently logged in user information based on token',
     },
   });
+
+// Combine both route groups
+export const usersRoutes = new Elysia()
+  .use(publicRoutes)
+  .use(protectedRoutes);

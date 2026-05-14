@@ -44,10 +44,10 @@ async function startServer() {
     process.exit(1);
   }
 
-  const port = process.env.PORT || 3000;
+  const port = Number(process.env.PORT || 3000);
   const host = process.env.HOST || 'localhost';
 
-  app.listen({ port, hostname: host }, () => {
+  app.listen(port, () => {
     console.log(`🚀 Elysia is running at http://${host}:${port}`);
     console.log(`📝 API Documentation available at http://${host}:${port}/docs`);
   });
