@@ -104,3 +104,31 @@ export async function verifyPassword(plainPassword: string, hashedPassword: stri
     return false;
   }
 }
+
+
+/**
+ * Get current user information by user ID
+ */
+export async function getCurrentUser(userId: number) {
+  try {
+    const userResult = await db
+      .select({
+        id: users.id,
+        name: users.firstName,
+        email: users.email,
+        created_at: users.createdAt,
+      })
+      .from(users)
+      .where(eq(users.id, userId))
+      .execute();
+
+    if (!userResult || userResult.length === 0) {
+      throw new Error('User not found');
+    }
+
+    return userResult[0];
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan';
+    throw new Error(errorMessage);
+  }
+}

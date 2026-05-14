@@ -1,5 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { UserModel } from '../models/user.model';
+import { authMiddleware } from '../middleware/auth';
+import { getCurrentUser } from '../services/user-service';
 
 export const usersRoutes = new Elysia({ prefix: '/users' })
   .get('/', async () => {
@@ -151,5 +153,31 @@ export const usersRoutes = new Elysia({ prefix: '/users' })
       tags: ['Users'],
       summary: 'Delete user by ID',
       description: 'Soft deletes a user by setting isActive to false',
+    },
+  })
+
+  .use(authMiddleware)
+  .get('/current', async ({ user, set }) => {
+    try {
+      // User sudah tersedia dari authMiddleware
+      return {
+        data: {
+          id: user.id,
+          name: user.firstName,
+          email: user.email,
+          created_at: user.createdAt,
+        },
+      };
+    } catch (error) {
+      set.status = 401;
+      return {
+        error: 'Unauthorized',
+      };
+    }
+  }, {
+    detail: {
+      tags: ['Users'],
+      summary: 'Get Current User',
+      description: 'Get currently logged in user information based on token',
     },
   });
