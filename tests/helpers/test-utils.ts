@@ -1,7 +1,7 @@
 import { Elysia } from 'elysia';
 import { routes } from '../../src/routes';
 import { db } from '../../src/config/database';
-import { users, sessions, posts } from '../../src/db/schema';
+import { users, sessions, posts, comments } from '../../src/db/schema';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -117,12 +117,17 @@ export const testDataGenerators = {
 /**
  * Create a test post in database
  */
-export async function createTestPost(authorId: number, data?: {
+export async function createTestPost(data?: {
   title?: string;
   content?: string;
+  authorId?: number;
   status?: string;
   publishedAt?: Date | null;
 }) {
+  if (!data?.authorId) {
+    throw new Error('authorId is required');
+  }
+
   const title = data?.title || `Test Post ${Date.now()}`;
   const content = data?.content || 'This is a test post content';
   const status = data?.status || 'draft';
@@ -133,7 +138,7 @@ export async function createTestPost(authorId: number, data?: {
     .values({
       title,
       content,
-      authorId,
+      authorId: data.authorId,
       status,
       publishedAt,
     })
@@ -144,8 +149,51 @@ export async function createTestPost(authorId: number, data?: {
     id: result[0].id,
     title,
     content,
-    authorId,
+    authorId: data.authorId,
     status,
     publishedAt,
+  };
+}
+
+/**
+ * Make a test HTTP request to the app
+ */
+export async function testRequest(
+  method: string,
+  path: string,
+  body: any,
+  headers?: Record<string, string>
+) {
+  const app = createTestApp();
+  const url = `http://localhost${path}`;
+  
+  const requestInit: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+  };
+
+  if (body) {
+    requestInit.body = JSON.stringify(body);
+  }
+
+  const response = await app.handle(new Request(url, requestInit));
+  
+  // Clone the response to read the body
+  const clonedResponse = response.clone();
+  const text = await clonedResponse.text();
+  
+  let responseBody;
+  try {
+    responseBody = JSON.parse(text);
+  } catch (e) {
+    responseBody = text;
+  }
+
+  return {
+    status: response.status,
+    body: responseBody,
   };
 }
