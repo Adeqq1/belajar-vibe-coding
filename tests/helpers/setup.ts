@@ -1,5 +1,10 @@
 import { db } from '../../src/config/database';
 import { users, posts, sessions, comments } from '../../src/db/schema';
+import { createTestUser as createTestUserUtil, createTestPost as createTestPostUtil } from './test-utils';
+
+// Re-export for convenience
+export const createTestUser = createTestUserUtil;
+export const createTestPost = createTestPostUtil;
 
 /**
  * Clear all data from database tables
@@ -7,6 +12,10 @@ import { users, posts, sessions, comments } from '../../src/db/schema';
  */
 export async function clearDatabase() {
   try {
+    // For comments, we need to handle the self-referencing foreign key
+    // First, set all parentId to NULL to break the self-reference
+    await db.update(comments).set({ parentId: null }).execute();
+    
     // Delete in order of foreign key dependencies
     await db.delete(comments).execute();
     await db.delete(sessions).execute();
@@ -52,4 +61,18 @@ export async function beforeEachTest() {
     console.error('Error in beforeEachTest:', error);
     throw error;
   }
+}
+
+/**
+ * Alias for setupTestEnvironment for backward compatibility
+ */
+export async function setupTestDatabase() {
+  return setupTestEnvironment();
+}
+
+/**
+ * Alias for cleanupTestEnvironment for backward compatibility
+ */
+export async function cleanupTestDatabase() {
+  return cleanupTestEnvironment();
 }
