@@ -32,6 +32,18 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       tags: ['Auth'],
       summary: 'User Registration',
       description: 'Register a new user with email and password',
+      responses: {
+        201: {
+          description: 'User registered successfully',
+          content: {
+            'application/json': {
+              example: {
+                data: 'OK',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -61,5 +73,17 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       tags: ['Auth'],
       summary: 'User Login',
       description: 'Login user with email and password, returns session token',
+      responses: {
+        200: {
+          description: 'Login successful',
+          content: {
+            'application/json': {
+              example: {
+                data: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+              },
+            },
+          },
+        },
+      },
     },
   });

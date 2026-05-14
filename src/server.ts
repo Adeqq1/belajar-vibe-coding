@@ -8,13 +8,8 @@ import { routes } from './routes';
 import { testConnection } from './config/database';
 
 const app = new Elysia({
-  prefix: '/api',
   adapter: node(),
 })
-  .use(corsMiddleware)
-  .use(loggingMiddleware)
-  .use(errorHandlingMiddleware)
-  .use(routes)
   .use(
     swagger({
       documentation: {
@@ -24,12 +19,22 @@ const app = new Elysia({
           version: '1.0.0',
         },
         tags: [
+          { name: 'Root', description: 'Root endpoint' },
+          { name: 'Auth', description: 'Authentication endpoints' },
           { name: 'Users', description: 'User management endpoints' },
           { name: 'Posts', description: 'Post management endpoints' },
-          { name: 'Auth', description: 'Authentication endpoints' },
+          { name: 'Comments', description: 'Comment management endpoints' },
         ],
       },
+      path: '/docs',
     })
+  )
+  .group('/api', (app) =>
+    app
+      .use(corsMiddleware)
+      .use(loggingMiddleware)
+      .use(errorHandlingMiddleware)
+      .use(routes)
   );
 
 // Test database connection on startup
