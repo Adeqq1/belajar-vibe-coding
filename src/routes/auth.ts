@@ -1,5 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { registerUser } from '../services/user-service';
+import { loginUser } from '../services/auth-service';
 
 export const authRoutes = new Elysia({ prefix: '/auth' })
   .post('/register', async ({ body, set }) => {
@@ -31,5 +32,34 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       tags: ['Auth'],
       summary: 'User Registration',
       description: 'Register a new user with email and password',
+    },
+  })
+
+  .post('/login', async ({ body, set }) => {
+    try {
+      const token = await loginUser({
+        email: body.email,
+        password: body.password,
+      });
+
+      set.status = 200;
+      return {
+        data: token,
+      };
+    } catch (error) {
+      set.status = 400;
+      return {
+        error: 'Username atau Password salah',
+      };
+    }
+  }, {
+    body: t.Object({
+      email: t.String({ format: 'email' }),
+      password: t.String({ minLength: 1 }),
+    }),
+    detail: {
+      tags: ['Auth'],
+      summary: 'User Login',
+      description: 'Login user with email and password, returns session token',
     },
   });

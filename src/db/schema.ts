@@ -50,6 +50,16 @@ export const comments = mysqlTable('comments', {
     .notNull(),
 });
 
+// Sessions table
+export const sessions = mysqlTable('sessions', {
+  id: int('id').primaryKey().autoincrement(),
+  token: varchar('token', { length: 255 }).notNull().unique(),
+  userId: int('user_id')
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
 // Types for tables
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -59,3 +69,6 @@ export type NewPost = typeof posts.$inferInsert;
 
 export type Comment = typeof comments.$inferSelect;
 export type NewComment = typeof comments.$inferInsert;
+
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;
