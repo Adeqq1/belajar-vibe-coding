@@ -38,6 +38,30 @@ export const commentsRoutes = new Elysia({ prefix: '/comments' })
       tags: ['Comments'],
       summary: 'Get all comments',
       description: 'Returns a list of all comments with optional filtering by postId or authorId',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: [
+                  {
+                    id: 1,
+                    content: 'Great post!',
+                    postId: 1,
+                    authorId: 1,
+                    parentId: null,
+                    createdAt: '2026-05-14T13:20:36.000Z',
+                    updatedAt: '2026-05-14T13:20:36.000Z',
+                  },
+                ],
+                message: 'Comments retrieved successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -69,6 +93,28 @@ export const commentsRoutes = new Elysia({ prefix: '/comments' })
       tags: ['Comments'],
       summary: 'Get comment by ID',
       description: 'Returns a single comment by their ID',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  content: 'Great post!',
+                  postId: 1,
+                  authorId: 1,
+                  parentId: null,
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T13:20:36.000Z',
+                },
+                message: 'Comment retrieved successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -102,6 +148,28 @@ export const commentsRoutes = new Elysia({ prefix: '/comments' })
       tags: ['Comments'],
       summary: 'Create a new comment',
       description: 'Creates a new comment on a post with the provided information',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  content: 'Great post!',
+                  postId: 1,
+                  authorId: 1,
+                  parentId: null,
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T13:20:36.000Z',
+                },
+                message: 'Comment created successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -138,6 +206,28 @@ export const commentsRoutes = new Elysia({ prefix: '/comments' })
       tags: ['Comments'],
       summary: 'Update comment by ID',
       description: 'Updates an existing comment with the provided information',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  content: 'Updated comment content',
+                  postId: 1,
+                  authorId: 1,
+                  parentId: null,
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T14:30:00.000Z',
+                },
+                message: 'Comment updated successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -169,5 +259,27 @@ export const commentsRoutes = new Elysia({ prefix: '/comments' })
       tags: ['Comments'],
       summary: 'Delete comment by ID',
       description: 'Deletes a comment permanently from the system',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  content: 'Great post!',
+                  postId: 1,
+                  authorId: 1,
+                  parentId: null,
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T13:20:36.000Z',
+                },
+                message: 'Comment deleted successfully',
+              },
+            },
+          },
+        },
+      },
     },
   });

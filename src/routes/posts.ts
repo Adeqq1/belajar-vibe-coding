@@ -21,6 +21,31 @@ export const postsRoutes = new Elysia({ prefix: '/posts' })
       tags: ['Posts'],
       summary: 'Get all posts',
       description: 'Returns a list of all posts in the system',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: [
+                  {
+                    id: 1,
+                    title: 'My First Post',
+                    content: 'This is the content of my first post',
+                    authorId: 1,
+                    status: 'published',
+                    publishedAt: '2026-05-14T13:20:36.000Z',
+                    createdAt: '2026-05-14T13:20:36.000Z',
+                    updatedAt: '2026-05-14T13:20:36.000Z',
+                  },
+                ],
+                message: 'Posts retrieved successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -52,6 +77,29 @@ export const postsRoutes = new Elysia({ prefix: '/posts' })
       tags: ['Posts'],
       summary: 'Get post by ID',
       description: 'Returns a single post by their ID',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  title: 'My First Post',
+                  content: 'This is the content of my first post',
+                  authorId: 1,
+                  status: 'published',
+                  publishedAt: '2026-05-14T13:20:36.000Z',
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T13:20:36.000Z',
+                },
+                message: 'Post retrieved successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -84,6 +132,29 @@ export const postsRoutes = new Elysia({ prefix: '/posts' })
       tags: ['Posts'],
       summary: 'Create a new post',
       description: 'Creates a new post with the provided information',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  title: 'My First Post',
+                  content: 'This is the content of my first post',
+                  authorId: 1,
+                  status: 'draft',
+                  publishedAt: null,
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T13:20:36.000Z',
+                },
+                message: 'Post created successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -124,6 +195,29 @@ export const postsRoutes = new Elysia({ prefix: '/posts' })
       tags: ['Posts'],
       summary: 'Update post by ID',
       description: 'Updates an existing post with the provided information',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  title: 'My Updated Post',
+                  content: 'This is the updated content',
+                  authorId: 1,
+                  status: 'published',
+                  publishedAt: '2026-05-14T14:00:00.000Z',
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T14:30:00.000Z',
+                },
+                message: 'Post updated successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -155,5 +249,28 @@ export const postsRoutes = new Elysia({ prefix: '/posts' })
       tags: ['Posts'],
       summary: 'Delete post by ID',
       description: 'Deletes a post permanently from the system',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  title: 'My First Post',
+                  content: 'This is the content of my first post',
+                  authorId: 1,
+                  status: 'published',
+                  publishedAt: '2026-05-14T13:20:36.000Z',
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T13:20:36.000Z',
+                },
+                message: 'Post deleted successfully',
+              },
+            },
+          },
+        },
+      },
     },
   });

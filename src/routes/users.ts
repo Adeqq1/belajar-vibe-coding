@@ -40,6 +40,32 @@ const publicRoutes = new Elysia({ prefix: '/users' })
       tags: ['Users'],
       summary: 'Get all users',
       description: 'Returns a list of all users in the system',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: [
+                  {
+                    id: 1,
+                    email: 'john@example.com',
+                    username: 'john_doe',
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    role: 'user',
+                    isActive: true,
+                    createdAt: '2026-05-14T13:20:36.000Z',
+                    updatedAt: '2026-05-14T13:20:36.000Z',
+                  },
+                ],
+                message: 'Users retrieved successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -71,6 +97,30 @@ const publicRoutes = new Elysia({ prefix: '/users' })
       tags: ['Users'],
       summary: 'Get user by ID',
       description: 'Returns a single user by their ID',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  email: 'john@example.com',
+                  username: 'john_doe',
+                  firstName: 'John',
+                  lastName: 'Doe',
+                  role: 'user',
+                  isActive: true,
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T13:20:36.000Z',
+                },
+                message: 'User retrieved successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -206,6 +256,30 @@ const publicRoutes = new Elysia({ prefix: '/users' })
       tags: ['Users'],
       summary: 'Create a new user',
       description: 'Creates a new user with the provided information. Username max 100 chars, email max 255 chars, firstName/lastName max 100 chars each.',
+      responses: {
+        201: {
+          description: 'User created successfully',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  email: 'john@example.com',
+                  username: 'john_doe',
+                  firstName: 'John',
+                  lastName: 'Doe',
+                  role: 'user',
+                  isActive: true,
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T13:20:36.000Z',
+                },
+                message: 'User created successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -332,6 +406,30 @@ const publicRoutes = new Elysia({ prefix: '/users' })
       tags: ['Users'],
       summary: 'Update user by ID',
       description: 'Updates an existing user with the provided information. Username max 100 chars, email max 255 chars, firstName/lastName max 100 chars each.',
+      responses: {
+        200: {
+          description: 'User updated successfully',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  email: 'john.updated@example.com',
+                  username: 'john_doe_updated',
+                  firstName: 'John',
+                  lastName: 'Doe',
+                  role: 'user',
+                  isActive: true,
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T14:30:00.000Z',
+                },
+                message: 'User updated successfully',
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -363,6 +461,30 @@ const publicRoutes = new Elysia({ prefix: '/users' })
       tags: ['Users'],
       summary: 'Delete user by ID',
       description: 'Soft deletes a user by setting isActive to false',
+      responses: {
+        200: {
+          description: 'User deleted successfully',
+          content: {
+            'application/json': {
+              example: {
+                success: true,
+                data: {
+                  id: 1,
+                  email: 'john@example.com',
+                  username: 'john_doe',
+                  firstName: 'John',
+                  lastName: 'Doe',
+                  role: 'user',
+                  isActive: false,
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T14:30:00.000Z',
+                },
+                message: 'User deleted successfully',
+              },
+            },
+          },
+        },
+      },
     },
   });
 
@@ -428,6 +550,23 @@ const protectedRoutes = new Elysia({ prefix: '/users' })
       tags: ['Users'],
       summary: 'Get Current User',
       description: 'Get currently logged in user information based on token',
+      responses: {
+        200: {
+          description: 'Success',
+          content: {
+            'application/json': {
+              example: {
+                data: {
+                  id: 1,
+                  name: 'John',
+                  email: 'john@example.com',
+                  created_at: '2026-05-14T13:20:36.000Z',
+                },
+              },
+            },
+          },
+        },
+      },
     },
   })
 
@@ -466,6 +605,28 @@ const protectedRoutes = new Elysia({ prefix: '/users' })
       tags: ['Users'],
       summary: 'User Logout',
       description: 'Logout user and delete session token from database',
+      responses: {
+        200: {
+          description: 'Logout successful',
+          content: {
+            'application/json': {
+              example: {
+                data: {
+                  id: 1,
+                  email: 'john@example.com',
+                  username: 'john_doe',
+                  firstName: 'John',
+                  lastName: 'Doe',
+                  role: 'user',
+                  isActive: true,
+                  createdAt: '2026-05-14T13:20:36.000Z',
+                  updatedAt: '2026-05-14T13:20:36.000Z',
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
 
