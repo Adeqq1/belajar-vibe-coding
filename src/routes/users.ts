@@ -74,18 +74,123 @@ const publicRoutes = new Elysia({ prefix: '/users' })
     },
   })
 
-  .post('/', async ({ body }) => {
+  .post('/', async ({ body, set }) => {
     try {
+      // Test: throw error to see if handler is called
+      if (body.username && body.username.length > 100) {
+        throw new Error(`Username too long: ${body.username.length} characters`);
+      }
+
+      // Validate username length - MUST be before create
+      if (!body.username || body.username.length === 0) {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'Username is required',
+        };
+      }
+
+      if (body.username.length > 100) {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'Username must not exceed 100 characters',
+          details: {
+            field: 'username',
+            maxLength: 100,
+            actualLength: body.username.length,
+          },
+        };
+      }
+
+      // Validate email length
+      if (!body.email || body.email.length === 0) {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'Email is required',
+        };
+      }
+
+      if (body.email.length > 255) {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'Email must not exceed 255 characters',
+          details: {
+            field: 'email',
+            maxLength: 255,
+            actualLength: body.email.length,
+          },
+        };
+      }
+
+      // Validate firstName length if provided
+      if (body.firstName && body.firstName.length > 100) {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'First name must not exceed 100 characters',
+          details: {
+            field: 'firstName',
+            maxLength: 100,
+            actualLength: body.firstName.length,
+          },
+        };
+      }
+
+      // Validate lastName length if provided
+      if (body.lastName && body.lastName.length > 100) {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'Last name must not exceed 100 characters',
+          details: {
+            field: 'lastName',
+            maxLength: 100,
+            actualLength: body.lastName.length,
+          },
+        };
+      }
+
+      // All validations passed, create user
       const user = await UserModel.create(body);
+      set.status = 201;
       return {
         success: true,
         data: user,
         message: 'User created successfully',
       };
-    } catch (error) {
+    } catch (error: any) {
+      // Handle duplicate email/username
+      if (error.code === 'ER_DUP_ENTRY') {
+        set.status = 409;
+        return {
+          success: false,
+          error: 'Email or username already exists',
+          details: {
+            code: 'DUPLICATE_ENTRY',
+          },
+        };
+      }
+
+      // Handle data too long error
+      if (error.code === 'ER_DATA_TOO_LONG') {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'Data too long for one or more fields',
+          details: {
+            code: 'DATA_TOO_LONG',
+            message: error.message,
+          },
+        };
+      }
+
+      set.status = 400;
       return {
         success: false,
-        error: 'Failed to create user',
+        error: error.message || 'Failed to create user',
       };
     }
   }, {
@@ -100,14 +205,71 @@ const publicRoutes = new Elysia({ prefix: '/users' })
     detail: {
       tags: ['Users'],
       summary: 'Create a new user',
-      description: 'Creates a new user with the provided information',
+      description: 'Creates a new user with the provided information. Username max 100 chars, email max 255 chars, firstName/lastName max 100 chars each.',
     },
   })
 
-  .put('/:id', async ({ params: { id }, body }) => {
+  .put('/:id', async ({ params: { id }, body, set }) => {
     try {
+      // Validate username length if provided
+      if (body.username && body.username.length > 100) {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'Username must not exceed 100 characters',
+          details: {
+            field: 'username',
+            maxLength: 100,
+            actualLength: body.username.length,
+          },
+        };
+      }
+
+      // Validate email length if provided
+      if (body.email && body.email.length > 255) {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'Email must not exceed 255 characters',
+          details: {
+            field: 'email',
+            maxLength: 255,
+            actualLength: body.email.length,
+          },
+        };
+      }
+
+      // Validate firstName length if provided
+      if (body.firstName && body.firstName.length > 100) {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'First name must not exceed 100 characters',
+          details: {
+            field: 'firstName',
+            maxLength: 100,
+            actualLength: body.firstName.length,
+          },
+        };
+      }
+
+      // Validate lastName length if provided
+      if (body.lastName && body.lastName.length > 100) {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'Last name must not exceed 100 characters',
+          details: {
+            field: 'lastName',
+            maxLength: 100,
+            actualLength: body.lastName.length,
+          },
+        };
+      }
+
       const user = await UserModel.update(Number(id), body);
       if (!user) {
+        set.status = 404;
         return {
           success: false,
           error: 'User not found',
@@ -118,10 +280,41 @@ const publicRoutes = new Elysia({ prefix: '/users' })
         data: user,
         message: 'User updated successfully',
       };
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error updating user:', error);
+
+      // Handle duplicate email/username
+      if (error.code === 'ER_DUP_ENTRY') {
+        set.status = 409;
+        return {
+          success: false,
+          error: 'Email or username already exists',
+          details: {
+            code: 'DUPLICATE_ENTRY',
+          },
+        };
+      }
+
+      // Handle data too long error
+      if (error.code === 'ER_DATA_TOO_LONG') {
+        set.status = 400;
+        return {
+          success: false,
+          error: 'Data too long for one or more fields',
+          details: {
+            code: 'DATA_TOO_LONG',
+            message: error.message,
+          },
+        };
+      }
+
+      set.status = 500;
       return {
         success: false,
         error: 'Failed to update user',
+        details: {
+          message: error.message,
+        },
       };
     }
   }, {
@@ -138,7 +331,7 @@ const publicRoutes = new Elysia({ prefix: '/users' })
     detail: {
       tags: ['Users'],
       summary: 'Update user by ID',
-      description: 'Updates an existing user with the provided information',
+      description: 'Updates an existing user with the provided information. Username max 100 chars, email max 255 chars, firstName/lastName max 100 chars each.',
     },
   })
 

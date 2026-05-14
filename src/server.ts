@@ -1,4 +1,5 @@
 import { Elysia } from 'elysia';
+import { node } from '@elysiajs/node';
 import { swagger } from '@elysiajs/swagger';
 import { corsMiddleware } from './middleware/cors';
 import { loggingMiddleware } from './middleware/logging';
@@ -8,6 +9,7 @@ import { testConnection } from './config/database';
 
 const app = new Elysia({
   prefix: '/api',
+  adapter: node(),
 })
   .use(corsMiddleware)
   .use(loggingMiddleware)
