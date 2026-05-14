@@ -2,6 +2,7 @@ import { Elysia, t } from 'elysia';
 import { UserModel } from '../models/user.model';
 import { createAuthMiddleware } from '../middleware/auth';
 import { getCurrentUser } from '../services/user-service';
+import { logoutUser } from '../services/auth-service';
 import { db } from '../config/database';
 import { sessions, users } from '../db/schema';
 import { eq } from 'drizzle-orm';
@@ -231,6 +232,53 @@ const protectedRoutes = new Elysia({ prefix: '/users' })
       tags: ['Users'],
       summary: 'Get Current User',
       description: 'Get currently logged in user information based on token',
+    },
+  })
+
+  .delete('/logout', async ({ headers, set }) => {
+    try {
+      // 1. Ambil token dari header Authorization
+      const authHeader = headers.authorization;
+
+      // 2. Validasi: Cek apakah token ada
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        set.status = 401;
+        return {
+          error: 'Unauthorized',
+        };
+      }
+
+      const token = authHeader.substring(7);
+
+      if (!token) {
+        set.status = 401;
+        return {
+          error: 'Unauthorized',
+        };
+      }
+
+      // 3. Panggil logoutUser(token)
+      const userData = await logoutUser(token);
+
+      // 4. Set status 200
+      set.status = 200;
+
+      // 5. Return response success
+      return {
+        data: userData,
+      };
+    } catch (error) {
+      // 6. Handle error
+      set.status = 401;
+      return {
+        error: 'Unauthorized',
+      };
+    }
+  }, {
+    detail: {
+      tags: ['Users'],
+      summary: 'User Logout',
+      description: 'Logout user and delete session token from database',
     },
   });
 
