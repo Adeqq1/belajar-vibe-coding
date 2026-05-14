@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../config/database';
 import { users, sessions } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 interface LoginUserData {
   email: string;
@@ -66,6 +66,7 @@ export async function loginUser(data: LoginUserData): Promise<string> {
 
 /**
  * Logout user by deleting session token from database
+ * Uses JOIN query for better performance (2 queries instead of 3)
  */
 export async function logoutUser(token: string): Promise<LogoutResponse> {
   try {
@@ -74,47 +75,45 @@ export async function logoutUser(token: string): Promise<LogoutResponse> {
       throw new Error('Token tidak valid');
     }
 
-    // 2. Cari session berdasarkan token di tabel sessions
-    const [session] = await db
-      .select()
+    // 2. Query session dan user dengan JOIN (1 query instead of 2)
+    const [result] = await db
+      .select({
+        sessionId: sessions.id,
+        userId: users.id,
+        username: users.username,
+        email: users.email,
+        createdAt: users.createdAt,
+      })
       .from(sessions)
+      .innerJoin(users, eq(sessions.userId, users.id))
       .where(eq(sessions.token, token))
       .execute();
 
-    // 3. Jika session tidak ditemukan, throw error 'Unauthorized'
-    if (!session) {
+    // 3. Jika session/user tidak ditemukan, throw error 'Unauthorized'
+    if (!result) {
       throw new Error('Unauthorized');
     }
 
-    // 4. Ambil userId dari session yang ditemukan
-    const userId = session.userId;
+    // 4. Simpan user data sebelum delete (prevent race condition)
+    const userData: LogoutResponse = {
+      id: result.userId,
+      name: result.username,
+      email: result.email,
+      created_at: result.createdAt,
+    };
 
-    // 5. Cari data user berdasarkan userId di tabel users
-    const [user] = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, userId))
-      .execute();
-
-    // 6. Jika user tidak ditemukan, throw error
-    if (!user) {
-      throw new Error('Unauthorized');
-    }
-
-    // 7. Hapus session dari database
+    // 5. Hapus session dari database
     await db
       .delete(sessions)
       .where(eq(sessions.token, token))
       .execute();
 
-    // 8. Return data user dengan format yang benar
-    return {
-      id: user.id,
-      name: user.username,
-      email: user.email,
-      created_at: user.createdAt,
-    };
+    // 6. Return user data
+    return userData;
   } catch (error) {
+    // Log original error for debugging
+    console.error('[logoutUser] Error:', error);
+
     const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan';
     throw new Error(errorMessage);
   }
