@@ -5,6 +5,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc && esbuild src/server.ts --bundle --platform=node --outdir=dist --format=cjs",
     "start": "node dist/server.js",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
     "db:generate": "drizzle-kit generate:mysql",
     "db:migrate": "drizzle-kit migrate:mysql",
     "db:studio": "drizzle-kit studio",
